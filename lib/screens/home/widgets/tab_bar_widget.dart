@@ -1,161 +1,72 @@
-import 'package:flutter/material.dart';
-import 'package:food_recipe_app/utils/constants/api_constants.dart';
-import 'package:food_recipe_app/screens/detail/detail_screen.dart';
-import 'package:food_recipe_app/utils/constants/text_strings.dart';
+import 'package:flutter/material.dart'; // Importing Flutter's Material package for UI components.
+import 'package:food_recipe_app/screens/home/widgets/home_tab_bar_view.dart';
+import 'package:food_recipe_app/screens/home/widgets/tab_items.dart';
+import 'package:food_recipe_app/utils/constants/text_strings.dart'; // Importing text string constants.
 
 class TabBarWidget extends StatelessWidget {
-  const TabBarWidget({super.key});
+  // A stateless widget to display a tab bar.
+  const TabBarWidget(
+      {super.key}); // Constructor for TabBarWidget with an optional key parameter.
 
   @override
   Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
-    final w = MediaQuery.of(context).size.width;
+    // Overriding the build method to define the UI.
+    final h =
+        MediaQuery.of(context).size.height; // Getting the height of the screen.
+    final w =
+        MediaQuery.of(context).size.width; // Getting the width of the screen.
+
     return DefaultTabController(
-      length: 4,
+      // Creating a DefaultTabController to manage the tabs.
+      length: 4, // Setting the number of tabs.
       child: Column(
+        // Using a Column to stack widgets vertically.
         children: [
           SizedBox(
-            height: h * .05,
+            // Using SizedBox to give the TabBar a specific height.
+            height:
+                h * .05, // Setting the height relative to the screen height.
             child: TabBar(
+              // Defining the TabBar with four tabs.
               tabs: const [
+                // List of TabItems (breakfast, lunch, dinner, quick).
                 TabItems(title: AppStrings.breakFast),
                 TabItems(title: AppStrings.lunch),
                 TabItems(title: AppStrings.dinner),
                 TabItems(title: AppStrings.quick),
               ],
-              unselectedLabelColor: Colors.red,
-              labelColor: Colors.white,
-              dividerColor: Colors.white,
+              unselectedLabelColor:
+                  Colors.red, // Color for unselected tab labels.
+              labelColor: Colors.white, // Color for selected tab labels.
+              dividerColor:
+                  Colors.white, // Color for the divider under the TabBar.
               indicator: BoxDecoration(
-                  color: Colors.red, borderRadius: BorderRadius.circular(20)),
-              labelPadding: EdgeInsets.symmetric(horizontal: w * .012),
+                // Customizing the indicator under the selected tab.
+                color: Colors.red, // Setting the indicator color.
+                borderRadius:
+                    BorderRadius.circular(20), // Making the indicator rounded.
+              ),
+              labelPadding: EdgeInsets.symmetric(
+                  horizontal: w * .012), // Adding padding to the tab labels.
             ),
           ),
-          SizedBox(height: h * 0.030),
+          SizedBox(height: h * 0.030), // Adding some space below the TabBar.
           SizedBox(
-            height: h * .3,
+            height: h * .3, // Setting the height for the TabBarView.
             child: const TabBarView(
+              // Displaying different content for each tab.
               children: [
-                HomeTabBarView(recipe: 'breakfast'),
-                HomeTabBarView(recipe: 'lunch'),
-                HomeTabBarView(recipe: 'dinner'),
-                HomeTabBarView(recipe: 'quick'),
+                HomeTabBarView(
+                    recipe: 'breakfast'), // Tab content for breakfast.
+                HomeTabBarView(recipe: 'lunch'), // Tab content for lunch.
+                HomeTabBarView(recipe: 'dinner'), // Tab content for dinner.
+                HomeTabBarView(
+                    recipe: 'quick'), // Tab content for quick recipes.
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class TabItems extends StatelessWidget {
-  const TabItems({super.key, required this.title});
-
-  final String title;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-          border: Border.all(color: Colors.red),
-          borderRadius: BorderRadius.circular(20)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8),
-        child: Center(
-          child: Text(
-            title,
-            style: const TextStyle(fontSize: 9.8),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class HomeTabBarView extends StatelessWidget {
-  const HomeTabBarView({super.key, required this.recipe});
-
-  final String recipe;
-
-  @override
-  Widget build(BuildContext context) {
-    final h = MediaQuery.of(context).size.height;
-    final w = MediaQuery.of(context).size.width;
-    return FutureBuilder(
-      future: ConstantFunction.getRecipeApi(recipe),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        } else if (!snapshot.hasData) {
-          return const Center(
-            child: Text(AppStrings.noData),
-          );
-        }
-        return SizedBox(
-          height: h * .28,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemBuilder: (context, index) {
-              Map<String, dynamic> snap = snapshot.data![index];
-              int time = snap['totalTime'].toInt();
-              int calories = snap['calories'].toInt();
-              return Container(
-                margin: EdgeInsets.only(right: w * .02),
-                width: w * .5,
-                child: Stack(
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        InkWell(
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => DetailScreen(items: snap),
-                              ),
-                            );
-                          },
-                          child: Container(
-                            width: w,
-                            height: h * .17,
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(15),
-                              image: DecorationImage(
-                                  image: NetworkImage(snap['image']),
-                                  fit: BoxFit.fill),
-                            ),
-                          ),
-                        ),
-                        SizedBox(height: h * .01),
-                        Text(
-                          snap['label'],
-                          style: TextStyle(
-                              fontSize: w * .035, fontWeight: FontWeight.bold),
-                        ),
-                        Text(
-                          "calories ${calories.toString()}, ${time.toString()} min",
-                          style: TextStyle(
-                            fontSize: w * .03,
-                            color: Colors.grey,
-                          ),
-                        )
-                      ],
-                    )
-                  ],
-                ),
-              );
-            },
-            separatorBuilder: (context, index) {
-              return const SizedBox(height: 15);
-            },
-            itemCount: snapshot.data!.length,
-          ),
-        );
-      },
     );
   }
 }
