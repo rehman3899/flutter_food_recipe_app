@@ -1,6 +1,7 @@
 
 import 'package:food_recipe_app/utils/constants/text_strings.dart';
 
+// List of countries tags used in the search screen
 List tags = [
   AppStrings.chinese,
   AppStrings.american,
