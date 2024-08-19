@@ -1,3 +1,4 @@
+  //  This class hold all images used in this app
 class AppImages{
 
   static const String onBoardingImage = 'assets/images/onboarding.jpg';

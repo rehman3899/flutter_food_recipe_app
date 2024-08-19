@@ -1,3 +1,4 @@
+ //  This class hold all strings used in this app
 class AppStrings {
   /// OnBoarding Screen Text
   static const String onBoardingTitle1 = "Lets cook delicious food";
